@@ -1,7 +1,30 @@
+import { useEffect, useState } from "react";
 import useUserContext from "../hooks/useUserContext";
 
 const Transactions = () => {
   const { loggedInUser } = useUserContext();
+  const [data, setData] = useState({});
+  useEffect(() => {
+    //("helloo loggedInUser", loggedInUser);
+    // /account/all
+    fetch(
+      `https://badbankbackend-81d3d9e49e8f.herokuapp.com/account/findOne/${loggedInUser.email}`
+    )
+      .then((response) => response.json()) // Parse the response as JSON
+      .then((data) => {
+        setData(data.data);
+        //("all data===>", data);
+        // formik.resetForm();
+        // toast.success(`${data.data}!`);
+
+        return;
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        // Handle any errors that occur during the fetch request
+      });
+  }, []);
+  //("all data===>x", data);
 
   const transactionList = loggedInUser?.transactionHistory?.map(
     (transaction, i) => {
@@ -25,13 +48,13 @@ const Transactions = () => {
         <table class="table">
           <thead>
             <tr>
-              <th scope="col">Date</th>
-              <th scope="col">Type</th>
-              <th scope="col">Amount</th>
+              <th scope="col">Name</th>
+              <th scope="col">Email</th>
+              <th scope="col">Remaining Balance</th>
             </tr>
           </thead>
 
-          {transactionList.length === 0 ? (
+          {data === null ? (
             <>
               <tbody>
                 <tr>
@@ -40,7 +63,13 @@ const Transactions = () => {
               </tbody>
             </>
           ) : (
-            <tbody style={{ color: "white" }}>{transactionList}</tbody>
+            <tbody style={{ color: "white" }}>
+              <tr>
+                <td>{data.name}</td>
+                <td>{data.email}</td>
+                <td>{data.balance}</td>
+              </tr>
+            </tbody>
           )}
         </table>
       )}

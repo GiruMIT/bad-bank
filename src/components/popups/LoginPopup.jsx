@@ -17,6 +17,35 @@ const LoginPopUp = ({ handleClose }) => {
     password: yup.string().required("Password is required"),
   });
 
+  function handle() {
+    const { email, password } = formik.values;
+
+    fetch(
+      `https://badbankbackend-81d3d9e49e8f.herokuapp.com/account/login/${email}/${password}`
+    )
+      // fetch(`http://localhost:5000/account/login/${email}/${password}`)
+      .then((response) => response.json()) // Parse the response as JSON
+      .then((data) => {
+        if (data.data == "Invalid email or password") {
+          toast.error("Can't find user please check your credential");
+        } else if (data.data.name !== "") {
+          setLoggedInUser(formik.values);
+          console.log("data=======>", data);
+          handleClose();
+          navigate("/myAccount");
+          toast.success(`Welcome, ${data.data.name}!`);
+          formik.resetForm();
+
+          return;
+        }
+        // Access the JSON data and perform further operations
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        // Handle any errors that occur during the fetch request
+      });
+  }
+
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -25,30 +54,30 @@ const LoginPopUp = ({ handleClose }) => {
 
     validationSchema: validationSchema,
 
-    onSubmit: () => {
-      const targetUser = user.find(
-        (user) => user.email.toLowerCase() === formik.values.email.toLowerCase()
-      );
+    // onSubmit: () => {
+    //   const targetUser = user.find(
+    //     (user) => user.email.toLowerCase() === formik.values.email.toLowerCase()
+    //   );
 
-      if (!targetUser) {
-        toast.error("User does not exist");
-        return;
-      }
+    //   if (!targetUser) {
+    //     toast.error("User does not exist");
+    //     return;
+    //   }
 
-      //Validate password
-      if (targetUser.password !== formik.values.password) {
-        toast.warn("Invalid credentials");
-        return;
-      }
+    //   //Validate password
+    //   if (targetUser.password !== formik.values.password) {
+    //     toast.warn("Invalid credentials");
+    //     return;
+    //   }
 
-      setLoggedInUser(targetUser);
+    //   setLoggedInUser(targetUser);
 
-      formik.resetForm();
-      handleClose();
-      navigate("/myAccount");
-      toast.success(`Welcome, ${targetUser.name}!`);
-      return;
-    },
+    //   formik.resetForm();
+    //   handleClose();
+    //   navigate("/myAccount");
+    //   toast.success(`Welcome, ${targetUser.name}!`);
+    //   return;
+    // },
   });
 
   //Listen for formik values changes
@@ -119,7 +148,7 @@ const LoginPopUp = ({ handleClose }) => {
                   <Button
                     variant="contained"
                     type="submit"
-                    onClick={formik.handleSubmit}
+                    onClick={handle}
                     disabled={isDissabled}
                   >
                     Login

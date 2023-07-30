@@ -27,6 +27,26 @@ const Deposit = () => {
       .typeError("The deposit amount must be a number"),
   });
 
+  function handle() {
+    const depAmount = parseFloat(formik.values.depositAmount);
+    // //("depAmount===>", depAmount, "email", loggedInUser);
+    fetch(
+      `https://badbankbackend-81d3d9e49e8f.herokuapp.com/account/update/${loggedInUser.email}/${depAmount}`
+    )
+      .then((response) => response.json()) // Parse the response as JSON
+      .then((data) => {
+        //("login new", data);
+        formik.resetForm();
+        toast.success(`${data.data}!`);
+
+        return;
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        // Handle any errors that occur during the fetch request
+      });
+  }
+
   const formik = useFormik({
     initialValues: {
       depositAmount: "",
@@ -130,7 +150,7 @@ const Deposit = () => {
               <Box m={2}>
                 <Button
                   variant="contained"
-                  onClick={formik.handleSubmit}
+                  onClick={handle}
                   disabled={isDisabled}
                 >
                   Deposit

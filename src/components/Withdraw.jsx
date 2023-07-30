@@ -11,7 +11,7 @@ import { Button, TextField, Box } from "@mui/material";
 const Withdraw = () => {
   const [isDisabled, setIsDisabled] = useState(true);
   const { user, setUser, loggedInUser, setLoggedInUser } = useUserContext();
-  const [balance, setBalance] = useState();
+  const [balance, setBalance] = useState(0);
 
   const [isLoginPopUp, setIsLoginPopUp] = useState(false);
 
@@ -23,7 +23,7 @@ const Withdraw = () => {
     withdrawAmount: yup
       .number()
       .min(1, "Must be greater or equal than $1")
-      .max(loggedInUser.balance, "Insufficient Funds(Overdraft)")
+      .max(loggedInUser.balance || 0, "Insufficient Funds(Overdraft)")
       .required("Withdraw Amount is required")
       .typeError("The withdraw amount must be a number"),
   });
@@ -44,8 +44,14 @@ const Withdraw = () => {
 
       const witAmount = parseFloat(formik.values.withdrawAmount);
 
+      // if (witAmount > loggedInUser.balance) {
+      //   toast.warn("Insufficient Funds");
+      //   return;
+      // }
+      //const maxBalance = loggedInUser.balance;
+
       if (witAmount > loggedInUser.balance) {
-        toast.warn("Insufficient Funds");
+        toast.warn("Insufficient Funds(Overdraft)");
         return;
       }
 
@@ -91,6 +97,27 @@ const Withdraw = () => {
   const customStyles = {
     width: "fit-content",
   };
+  const withdrawFunction = () => {
+    //("withdrawFunction called");
+    // /account/updatewithdraw/:email/:amount
+    const withdrawAmount = parseFloat(formik.values.withdrawAmount);
+    //("withdrawAmount", withdrawAmount);
+    fetch(
+      `https://badbankbackend-81d3d9e49e8f.herokuapp.com/account/updatewithdraw/${loggedInUser.email}/${withdrawAmount}`
+    )
+      .then((response) => response.json()) // Parse the response as JSON
+      .then((data) => {
+        //("login new", data);
+        formik.resetForm();
+        toast.success(`${data.data}!`);
+
+        return;
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        // Handle any errors that occur during the fetch request
+      });
+  };
   return (
     <>
       {isLoginPopUp && <LoginPopUp handleClose={toggleLoginPopUp} />}
@@ -113,7 +140,7 @@ const Withdraw = () => {
             <div className="row">
               <h3>Withdraw</h3>
               <h5 className="card-title">
-                Your Balance <span>${balance}</span>
+                Your Balanceee <span>${balance}</span>
               </h5>
             </div>
             <div>
@@ -138,7 +165,7 @@ const Withdraw = () => {
               <Box m={2}>
                 <Button
                   variant="contained"
-                  onClick={formik.handleSubmit}
+                  onClick={withdrawFunction}
                   disabled={isDisabled}
                 >
                   Withdraw

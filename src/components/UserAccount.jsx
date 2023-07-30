@@ -4,6 +4,10 @@ import Transactions from "./Transactions";
 const UserAccount = () => {
   const { loggedInUser } = useUserContext();
 
+  if (!loggedInUser) {
+    return <p>Please login to view your account details.</p>;
+  }
+
   return (
     <>
       <div className="userInfo-container">

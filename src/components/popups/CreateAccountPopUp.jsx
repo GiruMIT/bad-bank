@@ -46,8 +46,7 @@ const CreateAccountPopUp = ({ handleClose }) => {
       }
 
       const isDuplicateName = user.find((user) => {
-        user.name === formik.values.name,
-          console.log("testing name", user, formik.values);
+        user.name === formik.values.name, ("testing name", user, formik.values);
       });
 
       if (isDuplicateName) {
@@ -73,33 +72,50 @@ const CreateAccountPopUp = ({ handleClose }) => {
   });
 
   const handleSubmit = () => {
+    const { name, email, password } = formik.values;
+    //("formik.values.", name, email, password);
+
+    const url = `https://badbankbackend-81d3d9e49e8f.herokuapp.com/account/create/${name}/${email}/${password}`;
+    // const url = `http://localhost:5000/account/create/${name}/${email}/${password}`;
+    (async () => {
+      var res = await fetch(url);
+      var data = await res.json();
+      if (data.data == "User already in exists") {
+        toast.error("Email already in use");
+      } else {
+        toast.success("Successfully created");
+      }
+      //("api call res", data);
+    })();
+    // props.setShow(false);
+
     const isDuplicate = user.find((user) => user.email === formik.values.email);
 
     if (isDuplicate) {
       toast.error("Email already in use");
       return;
     }
-    const isDuplicateName = user.find((user) => {
-      console.log("testing name", user, formik.values);
+    // const isDuplicateName = user.find((user) => {
+    //   //("testing name", user, formik.values);
 
-      return user.name === formik.values.name;
-    });
+    //   return user.name === formik.values.name;
+    // });
 
-    if (isDuplicateName) {
-      toast.error("Name already in use");
-      return;
-    }
-    const persona = new User();
-    persona.name = formik.values.name;
-    persona.email = formik.values.email;
-    persona.password = formik.values.password;
-    persona.balance = 0;
-    persona.transactionHistory = [];
+    // if (isDuplicateName) {
+    //   toast.error("Name already in use");
+    //   return;
+    // }
+    // const persona = new User();
+    // persona.name = formik.values.name;
+    // persona.email = formik.values.email;
+    // persona.password = formik.values.password;
+    // persona.balance = 0;
+    // persona.transactionHistory = [];
 
-    setUser((prev) => [...prev, persona]);
+    // setUser((prev) => [...prev, persona]);
     formik.resetForm();
-    setOtherAccount((prev) => !prev);
-    toast.success("Successful user registration");
+    // setOtherAccount((prev) => !prev);
+    // toast.success("Successful user registration");
     return;
   };
 
