@@ -1,6 +1,10 @@
 {
   "name": "badbank",
   "version": "0.1.0",
+  "main": "index.js",
+  "engines": {
+    "node": "14.21.2"
+  },
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.9.3",
