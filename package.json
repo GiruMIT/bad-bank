@@ -5,7 +5,6 @@
   "engines": {
     "node": "14.21.2"
   },
-  "build": "NODE_OPTIONS=--max_old_space_size=4096 react-scripts build",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.9.3",
@@ -29,7 +28,7 @@
     "yup": "^0.32.11"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node --max-old-space-size=1024 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
