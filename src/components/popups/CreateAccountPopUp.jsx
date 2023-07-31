@@ -51,7 +51,6 @@ const CreateAccountPopUp = ({ handleClose }) => {
       const isDuplicateName = user.find(
         (user) => user.name === formik.values.name
       );
-
       if (isDuplicateName) {
         toast.error("Name already in use");
         return;
